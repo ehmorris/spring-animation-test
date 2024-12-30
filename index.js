@@ -10,13 +10,13 @@ const canvasManager = makeCanvasManager({
 
 const CTX = canvasManager.getContext();
 
-const xSpring = makeSpring(0, {
+const xSpring = makeSpring(canvasManager.getWidth() / 2, {
   stiffness: 70,
   damping: 8,
   mass: 1.2,
 });
 
-const ySpring = makeSpring(0, {
+const ySpring = makeSpring(canvasManager.getHeight() / 2, {
   stiffness: 70,
   damping: 8,
   mass: 1.2,

@@ -5,7 +5,7 @@ export const makeSpring = (
 ) => {
   let frameTime = performance.now();
   let value = initialValue;
-  let endValue = 0;
+  let endValue = initialValue;
   let velocity = 0;
   let isRested = true;
 
