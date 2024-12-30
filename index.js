@@ -36,6 +36,14 @@ animate(() => {
   CTX.closePath();
   CTX.fill();
   CTX.restore();
+
+  CTX.save();
+  CTX.fillStyle = "white";
+  CTX.fillText(`BOTH SPRINGS`, 24, 24);
+  CTX.fillText(`${xSpring.getStiffness().toFixed(1)} stiffness`, 24, 40);
+  CTX.fillText(`${xSpring.getDamping().toFixed(2)} damping`, 24, 56);
+  CTX.fillText(`${xSpring.getMass().toFixed(2)} mass`, 24, 72);
+  CTX.restore();
 });
 
 document.addEventListener("pointerdown", ({ clientX, clientY }) => {
@@ -46,4 +54,36 @@ document.addEventListener("pointerdown", ({ clientX, clientY }) => {
 document.addEventListener("pointermove", ({ clientX, clientY }) => {
   xSpring.setEndValue(clientX);
   ySpring.setEndValue(clientY);
+});
+
+document.addEventListener("keydown", ({ key, shiftKey }) => {
+  if (key === "s") {
+    xSpring.updateProps({ stiffness: xSpring.getStiffness() + 1 });
+    ySpring.updateProps({ stiffness: ySpring.getStiffness() + 1 });
+  }
+
+  if (key === "S" && shiftKey) {
+    xSpring.updateProps({ stiffness: xSpring.getStiffness() - 1 });
+    ySpring.updateProps({ stiffness: ySpring.getStiffness() - 1 });
+  }
+
+  if (key === "d") {
+    xSpring.updateProps({ damping: xSpring.getDamping() + 1 });
+    ySpring.updateProps({ damping: ySpring.getDamping() + 1 });
+  }
+
+  if (key === "D" && shiftKey) {
+    xSpring.updateProps({ damping: xSpring.getDamping() - 1 });
+    ySpring.updateProps({ damping: ySpring.getDamping() - 1 });
+  }
+
+  if (key === "m") {
+    xSpring.updateProps({ mass: xSpring.getMass() + 0.1 });
+    ySpring.updateProps({ mass: ySpring.getMass() + 0.1 });
+  }
+
+  if (key === "M" && shiftKey) {
+    xSpring.updateProps({ mass: xSpring.getMass() - 0.1 });
+    ySpring.updateProps({ mass: ySpring.getMass() - 0.1 });
+  }
 });

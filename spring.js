@@ -1,8 +1,18 @@
 // Based on https://github.com/hatsumatsu/spring
 export const makeSpring = (
   initialValue = 0,
-  { stiffness = 200, damping = 10, precision = 50, mass = 1 }
+  {
+    stiffness: initialStiffness = 200,
+    damping: initialDamping = 10,
+    precision: initialPrecision = 50,
+    mass: initialMass = 1,
+  }
 ) => {
+  let stiffness = initialStiffness;
+  let damping = initialDamping;
+  let precision = initialPrecision;
+  let mass = initialMass;
+
   let currentValue = initialValue;
   let endValue = initialValue; // initialize spring at rest
   let velocity = 0;
@@ -26,9 +36,25 @@ export const makeSpring = (
     lastUpdateTime = thisUpdateTime;
   };
 
+  const updateProps = ({
+    stiffness: passedStiffness = stiffness,
+    damping: passedDamping = damping,
+    precision: passedPrecision = precision,
+    mass: passedMass = mass,
+  }) => {
+    stiffness = passedStiffness;
+    damping = passedDamping;
+    precision = passedPrecision;
+    mass = passedMass;
+  };
+
   return {
     setEndValue: (v) => (endValue = v),
     getCurrentValue: () => currentValue,
     update,
+    updateProps,
+    getStiffness: () => stiffness,
+    getDamping: () => damping,
+    getMass: () => mass,
   };
 };
