@@ -19,7 +19,7 @@ export const makeSpring = (
 
     atRest =
       Math.abs(newVelocity) < 1 / precision &&
-      Math.abs(newValue - endValue) < 1 / precision;
+      Math.abs(endValue - newValue) < 1 / precision;
 
     currentValue = atRest ? endValue : newValue;
     velocity = newVelocity;
