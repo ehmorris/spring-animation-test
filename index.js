@@ -32,10 +32,15 @@ animate(() => {
   CTX.fillStyle = "red";
   CTX.translate(xSpring.getCurrentValue(), ySpring.getCurrentValue());
   CTX.beginPath();
-  CTX.arc(0, 0, 100, 0, Math.PI * 2);
+  CTX.arc(0, 0, 60, 0, Math.PI * 2);
   CTX.closePath();
   CTX.fill();
   CTX.restore();
+});
+
+document.addEventListener("pointerdown", ({ clientX, clientY }) => {
+  xSpring.setEndValue(clientX);
+  ySpring.setEndValue(clientY);
 });
 
 document.addEventListener("pointermove", ({ clientX, clientY }) => {
