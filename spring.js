@@ -17,8 +17,6 @@ export const makeSpring = (
     const newVelocity = velocity + acceleration * (deltaTime / 1000);
     const newValue = currentValue + newVelocity * (deltaTime / 1000);
 
-    // Velocity smaller than 1 / precision
-    // OR new difference smaller than 1 / precision
     atRest =
       Math.abs(newVelocity) < 1 / precision &&
       Math.abs(newValue - endValue) < 1 / precision;
