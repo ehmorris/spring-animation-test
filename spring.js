@@ -22,7 +22,7 @@ export const makeSpring = (
       Math.abs(endValue - newValue) < 1 / precision;
 
     currentValue = atRest ? endValue : newValue;
-    velocity = newVelocity;
+    velocity = atRest ? 0 : newVelocity;
     lastUpdateTime = thisUpdateTime;
   };
 
