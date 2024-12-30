@@ -38,7 +38,7 @@ animate(() => {
   CTX.restore();
 });
 
-document.addEventListener("mousemove", ({ clientX, clientY }) => {
+document.addEventListener("pointermove", ({ clientX, clientY }) => {
   xSpring.setEndValue(clientX);
   ySpring.setEndValue(clientY);
 });
