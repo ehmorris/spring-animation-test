@@ -11,15 +11,27 @@ const canvasManager = makeCanvasManager({
 const CTX = canvasManager.getContext();
 
 const xSpring = makeSpring(canvasManager.getWidth() / 2, {
-  stiffness: 70,
-  damping: 8,
-  mass: 1.2,
+  stiffness: 90,
+  damping: 10,
+  mass: 1.3,
 });
 
 const ySpring = makeSpring(canvasManager.getHeight() / 2, {
-  stiffness: 70,
-  damping: 8,
-  mass: 1.2,
+  stiffness: 90,
+  damping: 10,
+  mass: 1.3,
+});
+
+const scaleSpring = makeSpring(1, {
+  stiffness: 120,
+  damping: 16,
+  mass: 0.9,
+});
+
+const lightnessSpring = makeSpring(50, {
+  stiffness: 120,
+  damping: 16,
+  mass: 0.9,
 });
 
 animate(() => {
@@ -27,10 +39,13 @@ animate(() => {
 
   xSpring.update();
   ySpring.update();
+  scaleSpring.update();
+  lightnessSpring.update();
 
   CTX.save();
-  CTX.fillStyle = "red";
+  CTX.fillStyle = `hsl(355, 100%, ${lightnessSpring.getCurrentValue()}%)`;
   CTX.translate(xSpring.getCurrentValue(), ySpring.getCurrentValue());
+  CTX.scale(scaleSpring.getCurrentValue(), scaleSpring.getCurrentValue());
   CTX.beginPath();
   CTX.arc(0, 0, 60, 0, Math.PI * 2);
   CTX.closePath();
@@ -39,16 +54,26 @@ animate(() => {
 
   CTX.save();
   CTX.fillStyle = "white";
-  CTX.fillText(`BOTH SPRINGS`, 24, 24);
-  CTX.fillText(`${xSpring.getStiffness().toFixed(1)} stiffness`, 24, 40);
-  CTX.fillText(`${xSpring.getDamping().toFixed(2)} damping`, 24, 56);
-  CTX.fillText(`${xSpring.getMass().toFixed(2)} mass`, 24, 72);
+  CTX.translate(24, 40);
+  CTX.font = "bold 12px sans-serif";
+  CTX.fillText(`POSITION SPRINGS`, 0, 0);
+  CTX.font = "normal 12px sans-serif";
+  CTX.fillText(`${xSpring.getStiffness().toFixed(1)} stiffness`, 0, 16);
+  CTX.fillText(`${xSpring.getDamping().toFixed(2)} damping`, 0, 32);
+  CTX.fillText(`${xSpring.getMass().toFixed(2)} mass`, 0, 48);
   CTX.restore();
 });
 
 document.addEventListener("pointerdown", ({ clientX, clientY }) => {
   xSpring.setEndValue(clientX);
   ySpring.setEndValue(clientY);
+  scaleSpring.setEndValue(0.85);
+  lightnessSpring.setEndValue(20);
+});
+
+document.addEventListener("pointerup", () => {
+  scaleSpring.setEndValue(1);
+  lightnessSpring.setEndValue(50);
 });
 
 document.addEventListener("pointermove", ({ clientX, clientY }) => {
