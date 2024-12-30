@@ -3,37 +3,34 @@ export const makeSpring = (
   initialValue = 0,
   { stiffness = 200, damping = 10, precision = 50, mass = 1 }
 ) => {
-  let frameTime = performance.now();
-  let value = initialValue;
-  let endValue = initialValue;
+  let currentValue = initialValue;
+  let endValue = initialValue; // initialize spring at rest
   let velocity = 0;
-  let isRested = true;
+  let atRest = true;
+  let lastUpdateTime = performance.now();
 
-  const update = (time = performance.now()) => {
-    const distance = endValue - value;
-    const acceleration = (stiffness * distance) / mass - damping * velocity;
+  const update = () => {
+    const thisUpdateTime = performance.now();
+    const deltaTime = thisUpdateTime - lastUpdateTime;
+    const difference = endValue - currentValue;
+    const acceleration = (stiffness * difference) / mass - damping * velocity;
+    const newVelocity = velocity + acceleration * (deltaTime / 1000);
+    const newValue = currentValue + newVelocity * (deltaTime / 1000);
 
-    const newVelocity =
-      velocity +
-      acceleration * ((time - (frameTime || performance.now())) / 1000);
-    const newValue =
-      value + newVelocity * ((time - (frameTime || performance.now())) / 1000);
-
-    // velocity smaller than 1 / precision OR new distance smaller than 1 / precision
-    isRested =
+    // Velocity smaller than 1 / precision
+    // OR new difference smaller than 1 / precision
+    atRest =
       Math.abs(newVelocity) < 1 / precision &&
       Math.abs(newValue - endValue) < 1 / precision;
 
-    value = isRested ? endValue : newValue;
+    currentValue = atRest ? endValue : newValue;
     velocity = newVelocity;
-
-    // null frame time on rest so we can start with a fresh cycle
-    frameTime = isRested ? null : time;
+    lastUpdateTime = thisUpdateTime;
   };
 
   return {
     setEndValue: (v) => (endValue = v),
-    getCurrentValue: () => value,
+    getCurrentValue: () => currentValue,
     update,
   };
 };
