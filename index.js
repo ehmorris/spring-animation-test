@@ -2,6 +2,8 @@ import { makeCanvasManager } from "./canvas.js";
 import { animate } from "./helpers.js";
 import { makeSpring } from "./spring.js";
 
+let centerMessage;
+
 const canvasManager = makeCanvasManager({
   initialWidth: window.innerWidth,
   initialHeight: window.innerHeight,
@@ -34,13 +36,21 @@ const lightnessSpring = makeSpring(50, {
   mass: 0.9,
 });
 
-animate(() => {
+animate((deltaTime) => {
   CTX.clearRect(0, 0, canvasManager.getWidth(), canvasManager.getHeight());
 
-  xSpring.update();
-  ySpring.update();
-  scaleSpring.update();
-  lightnessSpring.update();
+  xSpring.update(deltaTime);
+  ySpring.update(deltaTime);
+  scaleSpring.update(deltaTime);
+  lightnessSpring.update(deltaTime);
+
+  CTX.save();
+  CTX.textAlign = "center";
+  CTX.font = "bold 24px sans-serif";
+  CTX.fillStyle = "white";
+  CTX.translate(canvasManager.getWidth() / 2, canvasManager.getHeight() / 2);
+  CTX.fillText(centerMessage, 0, 12);
+  CTX.restore();
 
   CTX.save();
   CTX.fillStyle = `hsl(355, 100%, ${lightnessSpring.getCurrentValue()}%)`;
@@ -77,8 +87,12 @@ document.addEventListener("pointerup", () => {
 });
 
 document.addEventListener("pointermove", ({ clientX, clientY }) => {
-  xSpring.setEndValue(clientX);
-  ySpring.setEndValue(clientY);
+  centerMessage = "";
+
+  const xPromise = xSpring.setEndValue(clientX);
+  const yPromise = ySpring.setEndValue(clientY);
+
+  Promise.all([xPromise, yPromise]).then(() => (centerMessage = "At rest"));
 });
 
 document.addEventListener("keydown", ({ key, shiftKey }) => {

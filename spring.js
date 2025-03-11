@@ -17,11 +17,9 @@ export const makeSpring = (
   let endValue = initialValue; // initialize spring at rest
   let velocity = 0;
   let atRest = true;
-  let lastUpdateTime = performance.now();
+  let pendingResolver = null;
 
-  const update = () => {
-    const thisUpdateTime = performance.now();
-    const deltaTime = thisUpdateTime - lastUpdateTime;
+  const update = (deltaTime) => {
     const difference = endValue - currentValue;
     const acceleration = (stiffness * difference) / mass - damping * velocity;
     const newVelocity = velocity + acceleration * (deltaTime / 1000);
@@ -33,7 +31,12 @@ export const makeSpring = (
 
     currentValue = atRest ? endValue : newValue;
     velocity = atRest ? 0 : newVelocity;
-    lastUpdateTime = thisUpdateTime;
+
+    // If the spring is at rest and we have a pending resolver, resolve it
+    if (atRest && pendingResolver) {
+      pendingResolver();
+      pendingResolver = null;
+    }
   };
 
   const updateProps = ({
@@ -48,8 +51,28 @@ export const makeSpring = (
     mass = passedMass;
   };
 
+  const setEndValue = (v) => {
+    endValue = v;
+
+    // If already at rest and at the target value, resolve immediately
+    return new Promise((resolve) => {
+      atRest && currentValue === endValue
+        ? resolve()
+        : (pendingResolver = resolve);
+    });
+  };
+
+  const resetValue = (v) => {
+    currentValue = v;
+    endValue = v;
+    velocity = 0;
+    atRest = true;
+    pendingResolver = null;
+  };
+
   return {
-    setEndValue: (v) => (endValue = v),
+    setEndValue,
+    resetValue,
     getCurrentValue: () => currentValue,
     update,
     updateProps,
